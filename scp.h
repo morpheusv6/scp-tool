@@ -32,9 +32,5 @@ int generate_iv(const gcry_cipher_hd_t hd, char **iv);
 char* get_key_from_passphrase(const gcry_cipher_hd_t hd, 
                                 const char *passphrase, const char *salt);
 
-unsigned char* generate_hash(const char *key, const size_t key_len,
-                                const struct message *msg);
-unsigned char* generate_inner_hash(const char *key, const size_t key_len, 
-                                    const struct message *msg);
-unsigned char* generate_outer_hash(const char *key, const size_t key_len,
-                                    const char* msg, const size_t msg_len);
+int serialize(const struct message *msg, const char *filepath);
+int deserialize(const char *filepath, struct message *msg);
