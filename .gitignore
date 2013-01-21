@@ -1,0 +1,8 @@
+ncsuenc
+ncsudec
+*.o
+*.txt
+*.*~
+*.*.bak
+*.ncsu
+.*.*.swp
