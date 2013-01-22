@@ -15,7 +15,7 @@ size_t read_file(const char *filepath, char **buffer)
     size_t file_size;
     
     // Read from the file
-    if((fp = fopen(filepath, "r")) == NULL)
+    if((fp = fopen(filepath, "rb")) == NULL)
     {
         printf("Cannot open file\n");
         return 0;
