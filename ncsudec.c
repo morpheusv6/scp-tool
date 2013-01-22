@@ -77,7 +77,7 @@ void write_text_to_file(const struct message *msg)
 
     //for(i = 0; i < msg->text_len; i++)
     {
-        fwrite(msg->text, msg->text_len - 1, 1, fp);
+        fwrite(msg->text, msg->text_len, 1, fp);
     }
 
     fclose(fp);

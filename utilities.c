@@ -25,7 +25,7 @@ size_t read_file(const char *filepath, char **buffer)
     file_size = ftell(fp);
     rewind(fp);
 
-    if((*buffer = (char*)calloc(1, sizeof(char) * (file_size + 1))) == NULL)
+    if((*buffer = (char*)calloc(1, sizeof(char) * (file_size))) == NULL)
     {
         printf("Memory allocation failed\n");
         fclose(fp);
@@ -37,12 +37,12 @@ size_t read_file(const char *filepath, char **buffer)
         printf("Unable to read from the file\n");
         free(*buffer);
         fclose(fp);
-	return 1;
+	    return 1;
     }
 
     fclose(fp);
 
-    return strlen(*buffer) + 1;
+    return file_size;
 }
 
 char* get_filename(const char *filepath)
