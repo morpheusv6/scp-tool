@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 
 char* recv_file(const char *port);
+void write_text_to_file(const struct message *msg);
 
 int main(int argc, char* argv[])
 {
@@ -56,12 +57,30 @@ int main(int argc, char* argv[])
         gets(passphrase);
 
         decrypt(hd, msg.text, passphrase, &msg);
-    
-        printf("\nDecrypted [%s] : %s\n", msg.filename, msg.text);
+
+        write_text_to_file(&msg);
+
+        //printf("\nDecrypted [%s] : %s\n", msg.filename, msg.text);
         gcry_cipher_close(hd);
      }
    
     return 0;
+}
+
+void write_text_to_file(const struct message *msg)
+{
+    char buffer[MAX_BUF_LEN];
+    FILE *fp;
+    int i, n;
+    
+    fp = fopen(msg->filename, "wb");
+
+    //for(i = 0; i < msg->text_len; i++)
+    {
+        fwrite(msg->text, msg->text_len - 1, 1, fp);
+    }
+
+    fclose(fp);
 }
 
 char* recv_file(const char *port)
