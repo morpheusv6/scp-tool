@@ -6,3 +6,4 @@ ncsudec
 *.*.bak
 *.ncsu
 .*.*.swp
+\test_files
