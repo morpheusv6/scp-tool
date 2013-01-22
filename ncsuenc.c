@@ -57,12 +57,12 @@ int main(int argc, char* argv[])
     encrypt(hd, buffer, passphrase, &msg); 
     digest_len = gcry_md_get_algo_dlen(SHA256);
 
-    printf("\nEncrypted :\n");
+    /*printf("\nEncrypted :\n");
     print_hex(msg.text, msg.text_len);
     printf("\n");
     printf("HMAC : ");
     print_hex(msg.hmac, digest_len);
-    printf("\n");
+    printf("\n");*/
 
     block_len = gcry_cipher_get_algo_keylen(ALG);    
     msg.total_len = sizeof(msg.total_len) + sizeof(msg.filename_len) + 

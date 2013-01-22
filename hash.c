@@ -55,7 +55,7 @@ unsigned char* generate_inner_hash(const char *key, const size_t key_len,
     gcry_md_write(hd, msg->iv, block_len);
     gcry_md_write(hd, msg->salt, block_len);
 
-    // Print written contents
+    /*// Print written contents
     printf("[%zu] [%zu] %s [%zu] [", msg->total_len, msg->filename_len, 
             msg->filename, msg->text_len);
     print_hex(msg->text, msg->text_len);
@@ -63,7 +63,7 @@ unsigned char* generate_inner_hash(const char *key, const size_t key_len,
     print_hex(msg->iv, block_len);
     printf("] [");
     print_hex(msg->salt, block_len);
-    printf("] \n");
+    printf("] \n");*/
 
     hash = gcry_md_read(hd, SHA256);
     strcpy(ret_hash, (char*)hash);
@@ -71,9 +71,9 @@ unsigned char* generate_inner_hash(const char *key, const size_t key_len,
     // TODO: Crash when called!!
     //gcry_md_close(hd);
     
-    printf("\nhash : ");
+    /*printf("\nhash : ");
     print_hex(ret_hash, digest_len);
-    printf("\n");
+    printf("\n");*/
 
     return ret_hash;
 }
@@ -86,7 +86,7 @@ unsigned char* generate_outer_hash(const char *key, const size_t key_len,
     gcry_md_hd_t hd;
     unsigned int digest_len;
 
-    printf("In outer hash\n");
+    //printf("In outer hash\n");
 
     digest_len = gcry_md_get_algo_dlen(SHA256);
     ret_hash = (unsigned char*)calloc(1, digest_len);
@@ -117,9 +117,9 @@ unsigned char* generate_outer_hash(const char *key, const size_t key_len,
 
     gcry_md_close(hd);
 
-    printf("\nhash : ");
+    /*printf("\nhash : ");
     print_hex(ret_hash, digest_len);
-    printf("\n");
+    printf("\n");*/
 
     return ret_hash;
 }

@@ -1,5 +1,6 @@
 #include "scp.h"
 
+// TODO: Encrypt and send the packet in 4KB chunks (total len)
 int initialize(gcry_cipher_hd_t *hd)
 {
     const char *version;
@@ -12,7 +13,7 @@ int initialize(gcry_cipher_hd_t *hd)
         return 1;
     }
 
-    printf("Using libgrypt version: %s\n", version);
+    //printf("Using libgrypt version: %s\n", version);
 
     // Initialization
     gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
@@ -31,13 +32,13 @@ int initialize(gcry_cipher_hd_t *hd)
     key_len = gcry_cipher_get_algo_keylen(ALG);
     block_len = gcry_cipher_get_algo_blklen(ALG);
 
-    printf("Initialization complete\n");
+    /*printf("Initialization complete\n");
     printf("Using %s algorithm with %zu key length and %zu block length in "  
            "%s mode\n",
             gcry_cipher_algo_name(ALG),
             key_len,
             block_len,
-            get_str_cipher_mode(MODE));
+            get_str_cipher_mode(MODE));*/
 
     return 0;
 }
