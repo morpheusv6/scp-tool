@@ -111,6 +111,7 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
     unsigned char *hmac;
     int hmac_OK = 0;
     FILE *fp;
+    unsigned int digest_len;
 
     if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
     {
@@ -122,7 +123,8 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
     block_len = gcry_cipher_get_algo_blklen(ALG);
     
     key = get_key_from_passphrase(hd, passphrase, msg->salt);
-
+    digest_len = gcry_md_get_algo_dlen(SHA256);
+    
     // Set the key
     if((gcry_error = gcry_cipher_setkey(hd, key, key_len)))
     {
@@ -145,7 +147,7 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
     hmac = generate_hash(key, key_len, msg);
 
     printf("Comparing HMACs... : %s\n", 
-            (hmac_OK = !strcmp(hmac, msg->hmac)) == 1 ? 
+            (hmac_OK = !memcmp(hmac, msg->hmac, digest_len)) == 1 ? 
                                         "OK" : "NOK");
     
     if(hmac_OK == 1)
