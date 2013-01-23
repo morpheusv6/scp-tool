@@ -43,10 +43,15 @@ int main(int argc, char* argv[])
 
         if(filepath == NULL)
         {
+            gcry_cipher_close(hd);
             return 1;
         }
 
-        deserialize(filepath, &msg);
+        if(deserialize(filepath, &msg) == 1)
+        {
+            gcry_cipher_close(hd);
+            return 1;
+        }
 
         // Remove the temporary file
         if(strcmp(argv[1], "-d") == 0)

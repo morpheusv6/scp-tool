@@ -11,7 +11,7 @@ int serialize(const struct message *msg, const char *filepath)
     // TODO: In memory serialization?                                           
     if(!(fp = fopen(filepath, "wb")))
     {
-        printf("Cannot serialize\n");
+        printf("Unable to open the file to serialize\n");
         return 1;
     }
 
@@ -40,7 +40,7 @@ int deserialize(const char *filepath, struct message *msg)
     // Read the file contents                                               
     if(!(fp = fopen(filepath, "rb")))
     {
-        printf("Unable to deserialize\n");
+        printf("Unable to open the file to deserialize\n");
         return 1;
     }
 
