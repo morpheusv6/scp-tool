@@ -65,30 +65,6 @@ char* get_filename(const char *filepath)
     return filename;
 }   
 
-char* get_filename_without_ext(const char *filename)
-{
-    char *last_loc, *filename_without_ext;
-    int i;
-
-    if((last_loc = strrchr(filename, '.')) == NULL)
-    {
-        filename_without_ext = 
-                (char*)calloc(1, sizeof(char) * strlen(filename) + 1);
-        strcpy(filename_without_ext, filename);
-        return filename_without_ext;   
-    }
-    
-    filename_without_ext = 
-                (char*)calloc(1, sizeof(char) * (last_loc - filename) + 1);
-    for(i = 0; (filename + i) != last_loc; i++)
-    {
-        filename_without_ext[i] = filename[i];
-    }
-
-    filename_without_ext[i] = '\0';
-    return filename_without_ext;
-}
-
 int get_ipaddress_port(const char *arg, char *ip, char *port)
 {
     regex_t regex;

@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
     if(ip == NULL && port == NULL)
     {
         // Encrypted file(message) to be stored locally
-        enc_filename = strcat( get_filename_without_ext(filename), ".ncsu");
+        enc_filename = strcat(filename, ".ncsu");
 
         // Check if the file exists, abort if it does
         if(access(enc_filename, F_OK) != -1)
