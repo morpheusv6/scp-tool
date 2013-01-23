@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
     char passphrase[MAX_BUF_LEN];
     struct message msg;
     char *ip, *port;
-    FILE *fp;
     unsigned int digest_len;
 
     ip = port = NULL;
@@ -55,6 +54,7 @@ int main(int argc, char* argv[])
     msg.text_len = buf_len;
 
     encrypt(hd, buffer, passphrase, &msg); 
+
     digest_len = gcry_md_get_algo_dlen(SHA256);
 
     /*printf("\nEncrypted :\n");
