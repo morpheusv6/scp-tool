@@ -110,7 +110,8 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
     size_t key_len, block_len;
     unsigned char *hmac;
     int hmac_OK = 0;
-    
+    FILE *fp;
+
     if(!gcry_control(GCRYCTL_INITIALIZATION_FINISHED_P))
     {
         printf("Libcrypt not initialized\n");
@@ -158,8 +159,8 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
             free(plain_text);        
             return 1;
         }
-    
-        strcpy(msg->text, plain_text);
+
+        memcpy(msg->text, plain_text, msg->text_len);
     }
 
     return 0;

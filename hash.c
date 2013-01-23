@@ -66,7 +66,7 @@ unsigned char* generate_inner_hash(const char *key, const size_t key_len,
     printf("] \n");*/
 
     hash = gcry_md_read(hd, SHA256);
-    strcpy(ret_hash, (char*)hash);
+    memcpy(ret_hash, hash, digest_len);
 
     // TODO: Crash when called!!
     //gcry_md_close(hd);
@@ -113,7 +113,7 @@ unsigned char* generate_outer_hash(const char *key, const size_t key_len,
     gcry_md_write(hd, msg, msg_len);
 
     hash = gcry_md_read(hd, SHA256);
-    strcpy(ret_hash, hash);
+    memcpy(ret_hash, hash, digest_len);
 
     gcry_md_close(hd);
 
