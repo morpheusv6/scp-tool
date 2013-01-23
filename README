@@ -1,0 +1,126 @@
+ncsuenc/ncsudec: A file encryption/decryption and transmission tool similar to 
+                the UNIX scp tool.
+
+== Author ==
+Devendra D. Chavan [ddchavan@ncsu.edu]
+
+== Source files ==
+1. scp.h
+2. scp.c
+3. utilities.h
+4. utilities.c
+5. serializer.h
+6. serializer.c
+7. ncsuenc.c
+8. ncsudec.c
+9. Makefile
+
+== Overview ==
+
+The tool consists of two commands each for encryption/transmission and 
+decryption/receipt. The tool uses AES256 (in CBC mode) for encryption with 
+SHA256 for HMAC and PBKDF2(SHA1) for the pass phrase hashing. 
+The encrypted/decrypted message is encapsulated in a struct. This struct 
+includes of the following fields:
+    total_len:      total message length (excluding hmac)
+    filename_len:   string length of the filename field
+    filename:       name of the encrypted file
+    text_len:       number of bytes in the text field
+    text:           encrypted/decrypted text
+    iv:             Initialization vector (for AES256 CBC encryption)
+    salt:           Salt for PBKDF2 key hash function
+    hmac:           SHA256 HMAC of the above fields
+The salt and iv are of fixed length (defined by the size of the key i.e. 256 
+bits or 32 bytes) while the SHA256 is 32 bytes long.
+
+The steps in the encryption algorithm are:
+1. Input a valid file path (parameter)
+2. Input a password
+3. Generate the random salt
+4. Use the salt to calculate the key of the passphrase using PBKDF2
+5. Generate the random IV
+6. Encrypt the message using the IV and key
+7. Calculate the total length of the message (excluding the hmac)
+8. Generate the HMAC of the encrypted message structure. 
+9. Serialize the message to file with .ncsu extension (in case IP address/port 
+    is not specified), 
+    otherwise serialize the message to a temporary file and then send the 
+    serialized contents to the specified IP address/port on a TCP socket. 
+
+The steps in the decryption algorithm are:
+1. Receive an encrypted file as input, either by accepting it over a TCP 
+    connection or receiving it's path as a parameter.
+2. Deserialize the file into the message structure
+3. Input the pass phrase
+4. Use the salt in the message to generate the key from the pass phrase
+5. Generate the hash of the message (excluding the hmac)
+6. If the HMAC matches, then decrypt the text using the IV and the key
+7. Write the decrypted text to the file with the specified filename
+
+== Usage ==
+
+1. ncsuenc: encryption command
+The usage of the command is as follows:
+    ncsuenc <input file> [<output IP-addr:port>]
+The command takes 2 parameters
+    <input file>:   File path of the file to be encrypted and optionally 
+                    transmitted
+    <output IP-addr:port>: Optional IP address and port of the receiver
+
+When the command is executed without the optional second argument, the encrypted
+file is placed in the current directory with the .ncsu extension. 
+When used with the IP address and port parameter, the file is first encrypted 
+and then transmitted over TCP to the specified receiver. Note that the receiver
+should be running and listening to incoming connection before the file can be
+sent.
+
+2. ncsudec: decryption command
+    ncsudec [-d <port>] [-i <input file>]
+The command takes 2 parameters (exclusive usage)
+    -d <port>:  Specifies the port to listen on for incoming connections
+    -i <input file>:    The file path of the encrypted file
+
+When used with the port option, the daemon listens for incoming connections, 
+decrypts the received file and stores it in the current directory.
+The input file option allows the user to use the command offline to decrypt an
+encrypted file.
+
+== Code layout ==
+
+The code is split into the following files:
+1. ncsuenc.c:   Contains the main() for the ncsuenc command and logic to send
+                the file over a TCP connection. Consumes the encrypt, 
+                generate_hash, serialize methods.
+2. ncsudec.c:   Contains the main() for the ncsudec command and logic to 
+                start a TCP daemon and receive a file. Consumes the decrypt, 
+                generate_hash, deserialize methods.
+3. scp.c:       Contains the methods to initialize the gcrypt subsystems, 
+                encrypt/decrypt a message, generate key from passphrase and 
+                generate the hash for the message (HMAC)
+4. utilities.c: Contains utility methods
+
+== Building ==
+
+The project uses 'make' for automating the compilation and linking process. 
+To build the project:
+> make
+
+To clean the project build files:
+> make clean
+
+== Known issues ==
+
+== Question == 
+There will be a particular decision you will need to make for dealing with
+PBKDF2. What extra input does it require and why is this used? 
+How does your program deal with it?
+
+The PBKDF2 generation requires an extra input called 'salt' that is used to 
+derive the key from the pass phrase. This salt is a random value that is
+generated during the encryption process and transmitted along with the message
+for use in the decryption process. Hence, a new random value of the salt is 
+used for encryption each message.
+
+== Effort ==
+Number of hours spent: 23
+Level: Moderate
