@@ -1,7 +1,8 @@
-#include "scp.h"
-
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <unistd.h>
+
+#include "scp.h"
 
 char* recv_file(const char *port);
 void write_text_to_file(const struct message *msg);
@@ -57,6 +58,14 @@ int main(int argc, char* argv[])
         gets(passphrase);
 
         decrypt(hd, msg.text, passphrase, &msg);
+
+        // Check if the file exists, if yes then abort
+        if(access(msg.filename, F_OK) != -1)
+        {
+            printf("File %s exists. Aborting...\n", msg.filename);
+            gcry_cipher_close(hd);
+            return 1;
+        }
 
         write_text_to_file(&msg);
 

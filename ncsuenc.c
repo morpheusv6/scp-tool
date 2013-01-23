@@ -1,8 +1,9 @@
-#include "scp.h"
-#include <assert.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <unistd.h>
+
+#include "scp.h"
 
 void send_message(const struct message *msg, const char *filename, 
             const char *ip, const char *port);
@@ -42,7 +43,21 @@ int main(int argc, char* argv[])
         get_ipaddress_port(argv[2], ip, port);
     }
 
-    buf_len = read_file(filepath, &buffer);
+    if((buf_len = read_file(filepath, &buffer)) == 0)
+    {
+        printf("Unable to open file");
+
+        free(filepath);
+        if (ip == NULL && port == NULL)
+        {
+            free(ip);
+            free(port);
+        }
+
+        gcry_cipher_close(hd);
+
+        return 1;
+    }
 
     printf("\nEnter passphrase : ");
     gets(passphrase);
@@ -73,6 +88,15 @@ int main(int argc, char* argv[])
     {
         // Encrypted file(message) to be stored locally
         enc_filename = strcat( get_filename_without_ext(filename), ".ncsu");
+
+        // Check if the file exists, abort if it does
+        if(access(enc_filename, F_OK) != -1)
+        {
+            printf("File %s exists. Aborting...\n", enc_filename);
+            gcry_cipher_close(hd);
+            return 1;
+        }
+
         serialize(&msg, enc_filename);
     }
     else
@@ -81,6 +105,8 @@ int main(int argc, char* argv[])
         free(ip);
         free(port);
     }
+
+    free(filepath);
 
     gcry_cipher_close(hd);
     
