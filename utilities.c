@@ -29,7 +29,7 @@ size_t read_file(const char *filepath, char **buffer)
     {
         printf("Memory allocation failed\n");
         fclose(fp);
-        return 1;
+        return 0;
     }
 
     if(fread(*buffer, file_size, 1, fp) != 1)
@@ -37,7 +37,7 @@ size_t read_file(const char *filepath, char **buffer)
         printf("Unable to read from the file\n");
         free(*buffer);
         fclose(fp);
-	    return 1;
+	    return 0;
     }
 
     fclose(fp);
