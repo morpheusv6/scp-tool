@@ -31,3 +31,5 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
 int generate_iv(const gcry_cipher_hd_t hd, char **iv);
 char* get_key_from_passphrase(const gcry_cipher_hd_t hd, 
                                 const char *passphrase, const char *salt);
+unsigned char* generate_hash(const char *key, const size_t key_len,
+                                const struct message *msg);
