@@ -31,6 +31,3 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
 int generate_iv(const gcry_cipher_hd_t hd, char **iv);
 char* get_key_from_passphrase(const gcry_cipher_hd_t hd, 
                                 const char *passphrase, const char *salt);
-
-int serialize(const struct message *msg, const char *filepath);
-int deserialize(const char *filepath, struct message *msg);
