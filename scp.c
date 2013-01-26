@@ -1,6 +1,5 @@
 #include "scp.h"
 
-// TODO: Encrypt and send the packet in 4KB chunks (total len)
 int initialize(gcry_cipher_hd_t *hd)
 {
     const char *version;
@@ -13,7 +12,9 @@ int initialize(gcry_cipher_hd_t *hd)
         return 1;
     }
 
-    //printf("Using libgrypt version: %s\n", version);
+    #ifdef DEBUG
+    printf("Using libgrypt version: %s\n", version);
+    #endif
 
     // Initialization
     gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
@@ -32,13 +33,15 @@ int initialize(gcry_cipher_hd_t *hd)
     key_len = gcry_cipher_get_algo_keylen(ALG);
     block_len = gcry_cipher_get_algo_blklen(ALG);
 
-    /*printf("Initialization complete\n");
+    #ifdef DEBUG
+    printf("Initialization complete\n");
     printf("Using %s algorithm with %zu key length and %zu block length in "  
            "%s mode\n",
             gcry_cipher_algo_name(ALG),
             key_len,
             block_len,
-            get_str_cipher_mode(MODE));*/
+            get_str_cipher_mode(MODE));
+    #endif
 
     return 0;
 }
@@ -87,7 +90,6 @@ int encrypt(const gcry_cipher_hd_t hd, const char *plain_text,
     {
         print_gcry_error("Error encrypting", &gcry_error);
 
-        // TODO: Return error code instead of exit(1)
         free(msg->text);
         return 1;
     }
@@ -97,7 +99,7 @@ int encrypt(const gcry_cipher_hd_t hd, const char *plain_text,
                             sizeof(msg->text_len) + block_len + block_len;
 
     // Generate the HMAC on the message
-    msg->hmac = generate_hash(key, key_len, msg);
+    msg->hmac = generate_hmac(key, key_len, msg);
 
     return 0;
 }
@@ -144,7 +146,7 @@ int decrypt(const gcry_cipher_hd_t hd, const char *cipher_text,
                             sizeof(msg->text_len) + block_len + block_len;
 
     // Generate the HMAC on the message
-    hmac = generate_hash(key, key_len, msg);
+    hmac = generate_hmac(key, key_len, msg);
 
     printf("Comparing HMACs... : %s\n", 
             (hmac_OK = !memcmp(hmac, msg->hmac, digest_len)) == 1 ? 
@@ -185,7 +187,6 @@ char* get_key_from_passphrase(const gcry_cipher_hd_t hd,
     block_len = gcry_cipher_get_algo_blklen(ALG);
 
     // Generate the salt for PBKDF2
-    // TODO: Can be in a macro
     salt_len = block_len;
     key = (char*)calloc(1, sizeof(char) * key_len);
     if((gpg_error = gcry_kdf_derive(
@@ -207,7 +208,7 @@ char* get_key_from_passphrase(const gcry_cipher_hd_t hd,
     return key;
 }
 
-unsigned char* generate_hash(const char *key, const size_t key_len,
+unsigned char* generate_hmac(const char *key, const size_t key_len,
                                     const struct message *msg)
 {
     unsigned char *hash, *ret_hash;
@@ -247,7 +248,8 @@ unsigned char* generate_hash(const char *key, const size_t key_len,
     gcry_md_write(hd, msg->iv, block_len);
     gcry_md_write(hd, msg->salt, block_len);
 
-    /*// Print written contents
+    #ifdef DEBUG
+    // Print written contents
     printf("[%zu] [%zu] %s [%zu] [", msg->total_len, msg->filename_len, 
             msg->filename, msg->text_len);
     print_hex(msg->text, msg->text_len);
@@ -255,17 +257,19 @@ unsigned char* generate_hash(const char *key, const size_t key_len,
     print_hex(msg->iv, block_len);
     printf("] [");
     print_hex(msg->salt, block_len);
-    printf("] \n");*/
+    printf("] \n");
+    #endif
 
     hash = gcry_md_read(hd, SHA256);
     memcpy(ret_hash, hash, digest_len);
 
-    // TODO: Crash when called!!
-    //gcry_md_close(hd);
+    gcry_md_close(hd);
     
-    /*printf("\nhash : ");
+    #ifdef DEBUG
+    printf("\nhash : ");
     print_hex(ret_hash, digest_len);
-    printf("\n");*/
+    printf("\n");
+    #endif
 
     return ret_hash;
 }
