@@ -68,14 +68,18 @@ int main(int argc, char* argv[])
     msg.filename_len = strlen(msg.filename) + 1;
     msg.text_len = buf_len;
 
-    encrypt(hd, buffer, passphrase, &msg); 
+    if(encrypt(hd, buffer, passphrase, &msg) != 0)
+    {
+        printf("Unable to encrypt\n");
+        gcry_cipher_close(hd);
+        return 1;
+    }
 
     digest_len = gcry_md_get_algo_dlen(SHA256);
 
-    /*printf("\nEncrypted :\n");
-    print_hex(msg.text, msg.text_len);
+    printf("\nEncrypted file : %s\n", filename);
     printf("\n");
-    printf("HMAC : ");
+    /*printf("HMAC : ");
     print_hex(msg.hmac, digest_len);
     printf("\n");*/
 
@@ -97,7 +101,14 @@ int main(int argc, char* argv[])
             return 1;
         }
 
-        serialize(&msg, enc_filename);
+        if(serialize(&msg, enc_filename) != 0)
+        {
+            printf("Unable to write the encrypted file\n");
+            gcry_cipher_close(hd);
+            return 1;
+        }
+
+        printf("Encrypted file written to : %s\n", enc_filename);
     }
     else
     {
@@ -126,7 +137,6 @@ void send_message(const struct message *msg, const char *filename,
     portno = atoi(port);
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
-        // TODO: Create error handling method
         printf("Unable to create socket\n");
         return;
     }
@@ -162,6 +172,8 @@ void send_message(const struct message *msg, const char *filename,
 
     fclose(fp);
     remove("temp");
+
+    printf("File %s encrypted and sent to %s:%s\n", msg->filename, ip, port);
 
     close(sockfd);
 }

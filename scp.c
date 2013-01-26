@@ -249,15 +249,9 @@ unsigned char* generate_hmac(const char *key, const size_t key_len,
     gcry_md_write(hd, msg->salt, block_len);
 
     #ifdef DEBUG
-    // Print written contents
-    printf("[%zu] [%zu] %s [%zu] [", msg->total_len, msg->filename_len, 
+    // Print written meta data 
+    printf("[%zu] [%zu] %s [%zu]\n", msg->total_len, msg->filename_len, 
             msg->filename, msg->text_len);
-    print_hex(msg->text, msg->text_len);
-    printf("] [");
-    print_hex(msg->iv, block_len);
-    printf("] [");
-    print_hex(msg->salt, block_len);
-    printf("] \n");
     #endif
 
     hash = gcry_md_read(hd, SHA256);

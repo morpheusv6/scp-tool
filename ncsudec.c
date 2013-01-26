@@ -26,57 +26,59 @@ int main(int argc, char* argv[])
 
     initialize(&hd);
     
-    if(argc >= 3)
+    if(strcmp(argv[1], "-d") == 0)
     {
-        if(strcmp(argv[1], "-d") == 0)
-        {
-            port = (char*)calloc(1, strlen(argv[2]) + 1);
-            strcpy(port, argv[2]);
-            filepath = recv_file(port);
-            free(port);
-        }
-        else if(strcmp(argv[1], "-i") == 0)
-        {
-            filepath = (char*)calloc(1, strlen(argv[2]) + 1);
-            strcpy(filepath, argv[2]); 
-        }
+        port = (char*)calloc(1, strlen(argv[2]) + 1);
+        strcpy(port, argv[2]);
+        filepath = recv_file(port);
+        free(port);
+    }
+    else if(strcmp(argv[1], "-i") == 0)
+    {
+        filepath = (char*)calloc(1, strlen(argv[2]) + 1);
+        strcpy(filepath, argv[2]); 
+    }
 
-        if(filepath == NULL)
-        {
-            gcry_cipher_close(hd);
-            return 1;
-        }
-
-        if(deserialize(filepath, &msg) == 1)
-        {
-            gcry_cipher_close(hd);
-            return 1;
-        }
-
-        // Remove the temporary file
-        if(strcmp(argv[1], "-d") == 0)
-        {
-            remove(filepath);
-        }
-
-        printf("\n\nEnter passphrase : ");
-        gets(passphrase);
-
-        decrypt(hd, msg.text, passphrase, &msg);
-
-        // Check if the file exists, if yes then abort
-        if(access(msg.filename, F_OK) != -1)
-        {
-            printf("File %s exists. Aborting...\n", msg.filename);
-            gcry_cipher_close(hd);
-            return 1;
-        }
-
-        write_text_to_file(&msg);
-
-        //printf("\nDecrypted [%s] : %s\n", msg.filename, msg.text);
+    if(filepath == NULL)
+    {
         gcry_cipher_close(hd);
-     }
+        return 1;
+    }
+
+    if(deserialize(filepath, &msg) == 1)
+    {
+        gcry_cipher_close(hd);
+        return 1;
+    }
+
+    // Remove the temporary file
+    if(strcmp(argv[1], "-d") == 0)
+    {
+        remove(filepath);
+    }
+
+    printf("\n\nEnter passphrase : ");
+    gets(passphrase);
+
+    if(decrypt(hd, msg.text, passphrase, &msg) != 0)
+    {
+        printf("Unable to decrypt\n");
+        gcry_cipher_close(hd);
+        return 1;
+    }
+
+    // Check if the file exists, if yes then abort
+    if(access(msg.filename, F_OK) != -1)
+    {
+        printf("File %s exists. Aborting...\n", msg.filename);
+        gcry_cipher_close(hd);
+        return 1;
+    }
+
+    write_text_to_file(&msg);
+
+    printf("\nDecrypted to %s\n", msg.filename);
+    gcry_cipher_close(hd);
    
     return 0;
 }
