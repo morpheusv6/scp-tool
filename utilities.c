@@ -77,7 +77,6 @@ int get_ipaddress_port(const char *arg, char *ip, char *port)
         groups = 
             (regmatch_t*)malloc(sizeof(regmatch_t) * num_regex_groups + 1);
 
-        // TODO: 3 is a magic number
         if(!regexec(&regex, arg, num_regex_groups, groups, 0) &&
             num_regex_groups == 3)
         {

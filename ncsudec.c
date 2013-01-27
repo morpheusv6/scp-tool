@@ -109,7 +109,6 @@ char* recv_file(const char *port)
     portno = atoi(port);
     if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
-        // TODO: Create error handling method
         printf("Unable to create socket\n");
         return NULL;
     }

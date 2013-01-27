@@ -196,7 +196,7 @@ char* get_key_from_passphrase(const gcry_cipher_hd_t hd,
             GCRY_MD_SHA1, 
             salt, 
             salt_len,
-            4096, // No. of iteration -> TODO: Move to macro
+            4096, // No. of iteration 
             key_len,
             key)))
     {
