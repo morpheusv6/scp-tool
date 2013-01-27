@@ -3,7 +3,8 @@
 #define ALG             GCRY_CIPHER_AES256
 #define SHA256          GCRY_MD_SHA256
 #define MODE            GCRY_CIPHER_MODE_CBC
-#define DEBUG           
+// Uncomment next line to view debug messages
+//#define DEBUG           
 #define VERBOSITY_LVL   4
 #define MAX_BUF_LEN     1024
 
