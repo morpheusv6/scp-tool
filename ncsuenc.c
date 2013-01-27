@@ -77,11 +77,13 @@ int main(int argc, char* argv[])
 
     digest_len = gcry_md_get_algo_dlen(SHA256);
 
-    printf("\nEncrypted file : %s\n", filename);
+    printf("Encrypted file : %s\n", filename);
+    #ifdef DEBUG
     printf("\n");
-    /*printf("HMAC : ");
+    printf("HMAC : ");
     print_hex(msg.hmac, digest_len);
-    printf("\n");*/
+    printf("\n");
+    #endif
 
     block_len = gcry_cipher_get_algo_keylen(ALG);    
     msg.total_len = sizeof(msg.total_len) + sizeof(msg.filename_len) + 

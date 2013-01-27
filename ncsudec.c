@@ -128,7 +128,7 @@ char* recv_file(const char *port)
     listen(sockfd, 5);
     clilen = sizeof(cli_addr);
     
-    printf("Waiting for incoming connection...\n");
+    printf("Waiting for incoming connections...\n");
     newsockfd = accept(sockfd, 
                 (struct sockaddr *)&cli_addr, 
                     &clilen);
